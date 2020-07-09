@@ -8,6 +8,14 @@ import reducer, {
 } from "../TodosDuck";
 import mockAxios from "axios";
 
+const buildState = (changes) => ({
+  loading: false,
+  results: {},
+  status: "",
+  error: null,
+  ...changes,
+});
+
 const mockStore = createMockStore([thunk]);
 
 describe("todos actions creators", () => {
@@ -42,5 +50,24 @@ describe("todos actions creators", () => {
       },
     ];
     expect(actions).toEqual(expectedActions);
+  });
+});
+
+describe("reducer", () => {
+  it("should return initialState if no state and action provided", () => {
+    const result = reducer(undefined, undefined);
+    expect(result).toEqual(buildState());
+  });
+  it("should handle loading action", () => {
+    const action = loadingTodos();
+    const result = reducer(undefined, action);
+    expect(result).toEqual(buildState({ loading: true }));
+  });
+  it("should handle fetch success", () => {
+    const action = getTodosSuccess([{ id: 1, name: "test" }]);
+    const result = reducer(undefined, action);
+    expect(result).toEqual(
+      buildState({ results: { 1: { id: 1, name: "test" } } })
+    );
   });
 });
